@@ -4,6 +4,7 @@
 import requests
 import json
 import time
+from config import NGROK_URL
 
 class LLMClient:
     """LLM API クライアントクラス"""
@@ -66,9 +67,6 @@ class LLMClient:
 
 # 使用例
 if __name__ == "__main__":
-    # ngrok URLを設定（実際のURLに置き換えてください）
-    NGROK_URL = "https://your-ngrok-url.ngrok.url"
-    
     # クライアントの初期化
     client = LLMClient(NGROK_URL)
     

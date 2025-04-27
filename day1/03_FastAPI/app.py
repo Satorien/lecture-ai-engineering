@@ -10,11 +10,10 @@ from typing import Optional, List, Dict, Any
 import uvicorn
 import nest_asyncio
 from pyngrok import ngrok
+from config import MODEL_NAME
 
 # --- 設定 ---
-# モデル名を設定
-MODEL_NAME = "google/gemma-2-2b-jpn-it"  # お好みのモデルに変更可能です
-print(f"モデル名を設定: {MODEL_NAME}")
+print(f"モデル名を表示: {MODEL_NAME}")
 
 # --- モデル設定クラス ---
 class Config:
