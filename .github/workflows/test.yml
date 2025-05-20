@@ -36,11 +36,12 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        BASE_SHA="${{ github.event.before }}"
+        BASE_SHA="${{ github.event.pull_request.base.sha }}"
         REPO="${{ github.repository }}"
         RUN_ID=$(gh api "repos/$REPO/actions/runs?per_page=100" -q ".workflow_runs[] | select(.head_sha==\"$BASE_SHA\") | .id" | head -n 1)
         echo "PREV_RUN_ID=$RUN_ID" >> $GITHUB_ENV
-      # BASE_SHA="${{ github.event.pull_request.base.sha }}"
+      # モデルの開発中に前のPushからの差分を見たい場合は
+      # BASE_SHA="${{ github.event.before }}"を指定する
 
     - name: Lint with flake8
       run: |
