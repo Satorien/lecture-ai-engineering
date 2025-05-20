@@ -39,6 +39,8 @@ curr = read_accuracy(latest_file) if latest_file else None
 
 def test_accuracy():
     """精度の比較を行う"""
-    assert prev is None or curr >= prev, "Current accuracy does not exceed previous accuracy!"
+    assert (
+        prev is None or curr >= prev
+    ), "Current accuracy does not exceed previous accuracy!"
     with open(ACCURACY_PATH, "w") as f:
         f.write(str(curr))
