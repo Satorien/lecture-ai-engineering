@@ -17,12 +17,32 @@ jobs:
       with:
         python-version: '3.10'
         
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with: 
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install pytest great_expectations pandas scikit-learn flake8 black mypy pytest-cov
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        
+    
+    - name: Get previous run_id for base SHA
+      id: get_run_id
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        REPO="${{ github.repository }}"
+        RUN_ID=$(gh api "repos/$REPO/actions/runs?per_page=100" -q ".workflow_runs[] | select(.head_sha==\"$BASE_SHA\") | .id" | head -n 1)
+        echo "PREV_RUN_ID=$RUN_ID" >> $GITHUB_ENV
+      # モデルの開発中に前のPushからの差分を見たい場合は
+      # BASE_SHA="${{ github.event.before }}"を指定する
+
     - name: Lint with flake8
       run: |
         flake8 day5/演習3 --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -39,3 +59,25 @@ jobs:
     - name: Run model tests
       run: |
         pytest day5/演習3/tests/test_model.py -v
+
+    - name: Download previous accuracy
+      uses: actions/download-artifact@v4
+      with:
+        name: accuracy
+        path: day5/演習3/tests/accuracy
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ env.PREV_RUN_ID }}
+      continue-on-error: true
+        
+    - name: Compare accuracy
+      run: |
+        pytest day5/演習3/tests/test_accuracy.py -v
+      
+    - name: Upload accuracy
+      uses: actions/upload-artifact@v4
+      with:
+        name: accuracy
+        path: day5/演習3/tests/accuracy/accuracy.txt
+        overwrite: true
+        retention-days: 10
+        compression-level: 0
