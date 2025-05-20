@@ -53,6 +53,8 @@ jobs:
       with:
         name: accuracy
         path: day5/演習3/tests/accuracy/accuracy.txt
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ github.event.before }}
       continue-on-error: true
         
     - name: Compare accuracy
