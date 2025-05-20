@@ -30,7 +30,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest great_expectations pandas scikit-learn flake8 black mypy pytest-cov
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        
+    
+    - name: Get previous run_id for base SHA
+      id: get_run_id
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        BASE_SHA="${{ github.event.before }}"
+        REPO="${{ github.repository }}"
+        RUN_ID=$(gh api "repos/$REPO/actions/runs?per_page=100" -q ".workflow_runs[] | select(.head_sha==\"$BASE_SHA\") | .id" | head -n 1)
+        echo "PREV_RUN_ID=$RUN_ID" >> $GITHUB_ENV
+      # BASE_SHA="${{ github.event.pull_request.base.sha }}"
+
     - name: Lint with flake8
       run: |
         flake8 day5/演習3 --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -54,6 +65,7 @@ jobs:
         name: accuracy
         path: day5/演習3/tests/accuracy/accuracy.txt
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ env.PREV_RUN_ID }}
       continue-on-error: true
         
     - name: Compare accuracy
