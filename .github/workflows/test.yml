@@ -63,7 +63,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: accuracy
-        path: day5/演習3/tests/accuracy/accuracy.txt
+        path: day5/演習3/tests/accuracy
         github-token: ${{ secrets.GITHUB_TOKEN }}
         run-id: ${{ env.PREV_RUN_ID }}
       continue-on-error: true
