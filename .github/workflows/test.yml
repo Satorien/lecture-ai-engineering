@@ -64,3 +64,6 @@ jobs:
       with:
         name: accuracy
         path: day5/演習3/tests/accuracy/accuracy.txt
+        overwrite: true
+        retention-days: 10
+        compression-level: 0

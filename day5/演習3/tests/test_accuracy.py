@@ -21,6 +21,7 @@ def get_latest_file_by_datetime(directory):
     latest_dt = None
     for file in files:
         basename = os.path.basename(file)
+        basename = basename.split(".")[0]
         try:
             dt = datetime.strptime(basename, "%Y%m%d_%H%M%S")
             if latest_dt is None or dt > latest_dt:
@@ -38,12 +39,6 @@ curr = read_accuracy(latest_file) if latest_file else None
 
 def test_accuracy():
     """精度の比較を行う"""
-    if prev is None:
-        print("Previous accuracy not found. Skipping comparison.")
-        return
-
-    assert curr >= prev, "Current accuracy does not exceed previous accuracy!"
-
-
-with open(ACCURACY_PATH, "w") as f:
-    f.write(str(curr))
+    assert prev is None or curr >= prev, "Current accuracy does not exceed previous accuracy!"
+    with open(ACCURACY_PATH, "w") as f:
+        f.write(str(curr))
